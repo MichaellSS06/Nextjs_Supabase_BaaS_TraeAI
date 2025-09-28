@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { supabase } from "@/lib/supabaseClient"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 
 const schema = z.object({
@@ -14,6 +14,7 @@ const schema = z.object({
 })
 
 export default function RegisterPage() {
+  const supabase = createClientComponentClient()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
