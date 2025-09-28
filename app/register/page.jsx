@@ -6,6 +6,8 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
+import OAuthButtons from "@/components/OAuthButtons"
+import { motion } from "framer-motion";
 
 const schema = z.object({
   email: z.email("Correo inválido"),
@@ -95,14 +97,19 @@ export default function RegisterPage() {
 
         {error && <p className="text-red-600 text-center">{error}</p>}
 
-        <button
+        <motion.button
           type="submit"
           disabled={loading}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
         >
           {loading ? "Creando..." : "Registrarse"}
-        </button>
+        </motion.button>
       </form>
+       <div className="flex flex-col items-center justify-center mt-10">
+          <span className="text-gray-400 text-sm">o continúa con</span>
+          {/* OAuth Buttons */}
+          <OAuthButtons/>
+      </div>
     </div>
   )
 }

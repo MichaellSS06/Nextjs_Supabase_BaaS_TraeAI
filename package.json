@@ -12,11 +12,14 @@
     "@hookform/resolvers": "^5.2.2",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.58.0",
+    "framer-motion": "^12.23.22",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.63.0",
-    "zod": "^4.1.11"
+    "react-hot-toast": "^2.6.0",
+    "zod": "^4.1.11",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,5 +1,7 @@
 import { createServerClient } from "@/lib/supabaseClient"
 import LogoutButton from "@/components/LogoutButton"
+import Link from "next/link"
+import { HydrateUser } from "@/components/HydratedUser"
 
 export default async function DashboardPage() {
   const supabase = await createServerClient()
@@ -8,10 +10,13 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser()
 
   return (
-    <div className="flex gap-10 items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col gap-10 items-center justify-center min-h-screen bg-gray-100">
       <h2 className="text-xl font-bold text-center">Dashboard</h2>
-      {user && <p className="mt-2">Hola, {user.user_metadata.username}</p>}
+      {user && <p className="mt-2">Hola, {user.user_metadata.username||user.user_metadata.name.split(" ")[0]}</p>}
       <LogoutButton />
+
+      <Link href="/dashboard/profilesetup" className="hover:text-blue-400 transition">Configurar perfil</Link>
+      <HydrateUser user={user} />
     </div>
   )
 }

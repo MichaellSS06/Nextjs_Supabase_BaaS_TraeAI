@@ -6,6 +6,8 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion";
+import OAuthButtons from "@/components/OAuthButtons"
 
 const schema = z.object({
   email: z.email("Correo inválido"),
@@ -40,9 +42,9 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
-
+  
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <form 
         onSubmit={handleSubmit(onSubmit)} 
         className="bg-white p-6 rounded-xl shadow-md w-80 space-y-4"
@@ -67,13 +69,13 @@ export default function LoginPage() {
 
         {error && <p className="text-red-600 text-center">{error}</p>}
 
-        <button
+        <motion.button
           type="submit"
           disabled={loading}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
         >
           {loading ? "Entrando..." : "Entrar"}
-        </button>
+        </motion.button>
 
         <p className="text-center text-sm">
           ¿No tienes cuenta?{" "}
@@ -82,6 +84,12 @@ export default function LoginPage() {
           </a>
         </p>
       </form>
+      <div className="flex flex-col items-center justify-center mt-10">
+          <span className="text-gray-400 text-sm">o continúa con</span>
+          {/* OAuth Buttons */}
+          <OAuthButtons/>
+      </div>
+        
     </div>
   )
 }
