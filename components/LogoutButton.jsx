@@ -8,6 +8,8 @@ export default function LogoutButton() {
   const router = useRouter()
 
   const handleLogout = async () => {
+    localStorage.removeItem("workout-storage")
+    localStorage.removeItem("user-storage")
     await supabase.auth.signOut()
     router.push("/login")
   }

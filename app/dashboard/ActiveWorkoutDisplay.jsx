@@ -1,11 +1,81 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useWorkoutStore } from "@/lib/useWorkoutStore"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
-export default function ActiveWorkoutDisplay() {
-  const { activeWorkout } = useWorkoutStore()
+export default function ActiveWorkoutDisplay({user}) {
+  const activeWorkout = useWorkoutStore((state) => state.activeWorkout)
+  const setActiveWorkout = useWorkoutStore((state) => state.setActiveWorkout)
+  const supabase = createClientComponentClient()
+  const [loading, setLoading] = useState(false)
   console.log(activeWorkout)
+
+  useEffect(() => {
+    const fetchLastWorkout = async () => {
+      if (activeWorkout || !user) return
+
+      // 1. Obtener el último user_workout
+      const { data: uw, error } = await supabase
+        .from("user_workouts")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single()
+
+      if (error || !uw) {
+        console.log("No hay entrenamientos previos", error)
+        return
+      }
+
+      // 2. Obtener ejercicios del workout
+      const { data: exercises, error: exError } = await supabase
+        .from("workout_exercises")
+        .select(`
+          sets, reps, rest,
+          exercises ( id, name, description, video_url )
+        `)
+        .eq("workout_id", uw.workout_id)
+
+      if (exError) {
+        console.error("Error al traer ejercicios", exError)
+        return
+      }
+
+      // 3. Guardar todo en Zustand
+      setActiveWorkout({ ...uw, exercises })
+    }
+
+    fetchLastWorkout()
+  }, [])
+
+  const handleComplete = async () => {
+    setLoading(true)
+    console.log(activeWorkout.workout_id)
+    // llamar a la edge function
+    const { data, error } = await supabase.functions.invoke("completeWorkout", {
+      body: { 
+        user_id: user.id,
+        user_workout_id: activeWorkout.id
+      }
+    })
+
+    setLoading(false)
+
+    if (error) {
+      console.error(error)
+      return alert("Error al completar entrenamiento")
+    }
+
+    console.log("✅ Resultado:", data)
+    alert("Entrenamiento marcado como completado" + `Puntos: ${data.newPoints}`)
+  }
+
+  // if (!activeWorkout && !user) {
+  //   return <p className="p-6">Cargando tu último entrenamiento...</p>
+  // }
   
   return (
     <motion.div 
@@ -59,6 +129,14 @@ export default function ActiveWorkoutDisplay() {
       ) : (
         <p className="text-gray-500">No hay entrenamiento activo</p>
       )}
+
+      <motion.button
+        onClick={handleComplete}
+        disabled={loading}
+        className="bg-green-600 text-white px-4 py-2 rounded-lg"
+      >
+        {loading ? "Guardando..." : "Completar entrenamiento"}
+      </motion.button>
     </motion.div>
   )
 }

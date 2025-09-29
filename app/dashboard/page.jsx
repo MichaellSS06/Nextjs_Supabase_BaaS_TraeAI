@@ -38,7 +38,10 @@ export default async function DashboardPage() {
         ))}
       </div>
       
-      <ActiveWorkoutDisplay />
+      <ActiveWorkoutDisplay user={user} />
+
+      <Link href="/progress" className="hover:text-blue-400 transition p-10">Progress Page</Link>
+      <Link href="/workouts/history" className="hover:text-blue-400 transition p-10">Workout History Page</Link>
     </div>
   )
 }
