@@ -4,6 +4,7 @@ import Link from "next/link"
 import { HydrateUser } from "@/components/HydratedUser"
 import WorkoutCard from "@/components/WorkoutCard"
 import ActiveWorkoutDisplay from "./ActiveWorkoutDisplay"
+import ChatSelector from "@/components/ChatSelector"
 
 export default async function DashboardPage() {
   const supabase = await createServerClient()
@@ -39,6 +40,8 @@ export default async function DashboardPage() {
       </div>
       
       <ActiveWorkoutDisplay user={user} />
+
+      <ChatSelector />
 
       <Link href="/progress" className="hover:text-blue-400 transition p-10">Progress Page</Link>
       <Link href="/workouts/history" className="hover:text-blue-400 transition p-10">Workout History Page</Link>
