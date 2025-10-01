@@ -4,7 +4,7 @@ import { getOrCreateWorkoutRoom } from "@/server/getOrCreateWorkoutRoom"
 
 export default async function ChatPage({ params }) {
   const supabase = await createServerClient()
-  const workoutId = await params.workoutId
+  const { workoutId } = await params
 
   // 1. Garantizar que la sala exista
   const room = await getOrCreateWorkoutRoom(workoutId)
@@ -18,7 +18,7 @@ export default async function ChatPage({ params }) {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Chat del Workout {params.workoutId}</h1>
+      <h1 className="text-xl font-bold mb-4">Chat del Workout {workoutId}</h1>
       <ChatContainer roomId={room.id} initialMessages={messages ?? []} />
     </div>
   )
