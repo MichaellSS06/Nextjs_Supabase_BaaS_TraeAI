@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import Picker from "@emoji-mart/react"
+import EmojiPicker from 'emoji-picker-react'
 
 export default function ChatInput({ supabase, roomId, user }) {
   const [text, setText] = useState("")
@@ -31,13 +31,13 @@ export default function ChatInput({ supabase, roomId, user }) {
         const filePath = `room_${roomId}/${fileName}`
 
         const { error: uploadError } = await supabase.storage
-          .from("chat")
+          .from("chat_attachments")
           .upload(filePath, previewFile)
 
         if (uploadError) throw uploadError
 
         const { data: { publicUrl } } = supabase.storage
-          .from("chat")
+          .from("chat_attachments")
           .getPublicUrl(filePath)
 
         await supabase.from("chat_messages").insert({
@@ -134,7 +134,7 @@ export default function ChatInput({ supabase, roomId, user }) {
 
       {showEmoji && (
         <div className="absolute bottom-16">
-          <Picker onEmojiSelect={(emoji) => setText(text + emoji.native)} />
+          <EmojiPicker onEmojiClick={(emoji) => setText(text + emoji.emoji)} />
         </div>
       )}
 
