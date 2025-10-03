@@ -14,7 +14,7 @@ export default async function GlobalChatPage() {
   // 2. Mensajes iniciales
   const { data: messages } = await supabase
     .from("chat_messages")
-    .select("id, content, created_at, user_id, profiles(username)")
+    .select("id, type, file_url, content, created_at, user_id, profiles(username)")
     .eq("room_id", room.id)
     .order("created_at", { ascending: true })
 

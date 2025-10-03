@@ -1,6 +1,7 @@
 "use client"
 
 export default function ChatMessage({ message, username }) {
+  //console.log(message)
   return (
     <div className="p-2 bg-gray-50 rounded">
       <div className="text-xs text-gray-500">{username}</div>

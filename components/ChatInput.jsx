@@ -8,7 +8,7 @@ export default function ChatInput({ supabase, roomId, user }) {
   const [showEmoji, setShowEmoji] = useState(false)
   const [showStickers, setShowStickers] = useState(false)
   const [sending, setSending] = useState(false)
-
+  
   const handleFileSelect = (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -17,6 +17,7 @@ export default function ChatInput({ supabase, roomId, user }) {
       return
     }
     setPreviewFile(file)
+    e.target.value = ""
   }
 
   const sendMessage = async () => {
@@ -29,17 +30,17 @@ export default function ChatInput({ supabase, roomId, user }) {
         const fileExt = previewFile.name.split(".").pop()
         const fileName = `${Date.now()}_${user.id}.${fileExt}`
         const filePath = `room_${roomId}/${fileName}`
-
+        console.log(filePath)
         const { error: uploadError } = await supabase.storage
           .from("chat_attachments")
           .upload(filePath, previewFile)
-
+        console.log(uploadError)
         if (uploadError) throw uploadError
 
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = await supabase.storage
           .from("chat_attachments")
           .getPublicUrl(filePath)
-
+        console.log(publicUrl)
         await supabase.from("chat_messages").insert({
           room_id: roomId,
           user_id: user.id,
@@ -47,6 +48,7 @@ export default function ChatInput({ supabase, roomId, user }) {
           file_url: publicUrl,
           content: previewFile.name,
         })
+        console.log(publicUrl)
 
         setPreviewFile(null)
       }
