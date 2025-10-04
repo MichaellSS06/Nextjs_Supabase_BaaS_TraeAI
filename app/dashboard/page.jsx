@@ -11,6 +11,7 @@ export default async function DashboardPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  console.log(user)
 
   // Obtener entrenamientos generales o creados por el sistema
   const { data: workouts, error } = await supabase
@@ -28,6 +29,8 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-10 items-center justify-center min-h-screen bg-gray-100">
       <h2 className="text-xl font-bold text-center">Dashboard</h2>
       {user && <p className="mt-2">Hola, {user.user_metadata.username||user.user_metadata.name.split(" ")[0]}</p>}
+      {user && <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />}
+      
       <LogoutButton />
 
       <Link href="/dashboard/profilesetup" className="hover:text-blue-400 transition">Configurar perfil</Link>

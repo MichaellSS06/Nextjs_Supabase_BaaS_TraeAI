@@ -1,6 +1,8 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import EmojiPicker from 'emoji-picker-react'
+import { isPremium } from "@/utils/isPremium"
+import { getStickers } from "@/utils/getStickers"
 
 export default function ChatInput({ supabase, roomId, user }) {
   const [text, setText] = useState("")
@@ -8,7 +10,22 @@ export default function ChatInput({ supabase, roomId, user }) {
   const [showEmoji, setShowEmoji] = useState(false)
   const [showStickers, setShowStickers] = useState(false)
   const [sending, setSending] = useState(false)
-  
+  const [stickers, setStickers] = useState([])
+
+  useEffect(() => {
+    const loadStickers = async () => {
+      if (!user) return
+      const premium = await isPremium(supabase, user.id)
+      console.log(premium)
+      if (premium) {
+        const stickerUrls = await getStickers(supabase)
+        console.log("Stickers obtenidos:", stickerUrls)
+        setStickers(stickerUrls)
+      }
+    }
+    loadStickers()
+  }, [supabase, user])
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -30,17 +47,17 @@ export default function ChatInput({ supabase, roomId, user }) {
         const fileExt = previewFile.name.split(".").pop()
         const fileName = `${Date.now()}_${user.id}.${fileExt}`
         const filePath = `room_${roomId}/${fileName}`
-        console.log(filePath)
+        
         const { error: uploadError } = await supabase.storage
           .from("chat_attachments")
           .upload(filePath, previewFile)
-        console.log(uploadError)
+        
         if (uploadError) throw uploadError
 
         const { data: { publicUrl } } = await supabase.storage
           .from("chat_attachments")
           .getPublicUrl(filePath)
-        console.log(publicUrl)
+        
         await supabase.from("chat_messages").insert({
           room_id: roomId,
           user_id: user.id,
@@ -48,7 +65,6 @@ export default function ChatInput({ supabase, roomId, user }) {
           file_url: publicUrl,
           content: previewFile.name,
         })
-        console.log(publicUrl)
 
         setPreviewFile(null)
       }
@@ -71,11 +87,13 @@ export default function ChatInput({ supabase, roomId, user }) {
   }
 
   const sendSticker = async (stickerUrl) => {
+    console.log(stickerUrl)
     await supabase.from("chat_messages").insert({
       room_id: roomId,
       user_id: user.id,
       type: "sticker",
       file_url: stickerUrl,
+      content: "sticker"
     })
     setShowStickers(false)
   }
@@ -140,9 +158,9 @@ export default function ChatInput({ supabase, roomId, user }) {
         </div>
       )}
 
-      {showStickers && (
+      {showStickers && stickers.length > 0 && (
         <div className="absolute bottom-16 grid grid-cols-4 gap-2 bg-white p-2 border rounded-lg">
-          {["/stickers/st1.png", "/stickers/st2.png", "/stickers/st3.png"].map(
+          {stickers.map(
             (sticker, i) => (
               <img
                 key={i}

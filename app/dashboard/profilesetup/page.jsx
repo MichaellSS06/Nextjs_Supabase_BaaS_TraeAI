@@ -11,6 +11,7 @@ export default function ProfileSetupPage() {
   const router = useRouter()
   const user = useUserStore((state) => state.user)
   const profile = useUserStore((state) => state.profile)
+  const [avatarFile, setAvatarFile] = useState(null) // para manejar el archivo de imagen
 
   const [form, setForm] = useState({
     full_name: "",
@@ -20,6 +21,7 @@ export default function ProfileSetupPage() {
     goal: "",
     equipment: [],
     preferences: { time_per_week: "", injuries: "" },
+    avatar_url: "", // 👈 añadimos avatar_url
   })
 
   const handleChange = (e) => {
@@ -40,6 +42,13 @@ export default function ProfileSetupPage() {
     })
   }
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setAvatarFile(file)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -47,6 +56,31 @@ export default function ProfileSetupPage() {
       toast.error("Debes iniciar sesión primero")
       return
     }
+
+    let avatar_url = form.avatar_url
+
+    // 👇 Subir avatar si hay archivo nuevo
+    if (avatarFile) {
+      const fileExt = avatarFile.name.split(".").pop()
+      const fileName = `${user.id}.${fileExt}`
+      const filePath = `avatars/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars") // 👈 bucket "avatars" en Storage
+        .upload(filePath, avatarFile, { upsert: true })
+
+      if (uploadError) {
+        console.error(uploadError)
+        toast.error("Error subiendo avatar")
+        return
+      }
+
+      // Obtener URL pública
+      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath)
+      avatar_url = data.publicUrl
+    }
+
+    // 👇 Guardar perfil
 
     const { error } = await supabase.from("profiles").upsert({
       id: user.id,
@@ -57,6 +91,7 @@ export default function ProfileSetupPage() {
       goal: form.goal,
       equipment: form.equipment,
       preferences: form.preferences,
+      avatar_url, // 👈 guardamos avatar_url
     })
 
     if (error) {
@@ -72,6 +107,25 @@ export default function ProfileSetupPage() {
     <div className="max-w-2xl mx-auto p-6 bg-white shadow rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Configura tu Perfil</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
+
+         {/* Avatar */}
+        <div>
+          <label className="block font-medium">Foto de perfil</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarChange}
+            className="w-full"
+          />
+          {form.avatar_url && (
+            <img
+              src={form.avatar_url}
+              alt="Avatar actual"
+              className="mt-2 w-24 h-24 rounded-full object-cover"
+            />
+          )}
+        </div>
+
         <div>
           <label className="block font-medium">Nombre completo</label>
           <input
