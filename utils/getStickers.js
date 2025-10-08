@@ -8,7 +8,7 @@ export async function getStickers(supabase) {
   if (!files || files.length === 0) return [];
 
   // Generamos URLs firmadas para cada archivo
-  const signedUrls = await Promise.all(
+  const stickers = await Promise.all(
     files.map(async (file) => {
       const { data, error } = await supabase.storage
         .from("stickers_premium")
@@ -17,10 +17,13 @@ export async function getStickers(supabase) {
         console.error("Error creando signed URL:", error);
         return null;
       }
-      return data.signedUrl;
+      return {
+        path: file.name,          // path permanente (lo que guardarás en BD)
+        signedUrl: data.signedUrl // URL temporal para mostrar
+      };
     })
   );
 
   // Filtramos nulos por si algún archivo falla
-  return signedUrls.filter((url) => url !== null);
+  return stickers.filter((s) => s !== null);
 }

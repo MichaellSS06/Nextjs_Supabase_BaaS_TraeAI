@@ -11,7 +11,7 @@ export default async function DashboardPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  console.log(user)
+  console.log(user.user_metadata.avatar_url)
 
   // Obtener entrenamientos generales o creados por el sistema
   const { data: workouts, error } = await supabase

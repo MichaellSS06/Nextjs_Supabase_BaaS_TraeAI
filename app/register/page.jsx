@@ -53,6 +53,13 @@ export default function RegisterPage() {
         }
       ])
 
+      await supabase.from("subscriptions").insert([
+        {
+          user_id: authData.user.id,
+          status: "canceled",
+        }
+      ])
+
       if (profileError) throw profileError
 
       router.push("/dashboard")

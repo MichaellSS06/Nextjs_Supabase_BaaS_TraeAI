@@ -86,13 +86,13 @@ export default function ChatInput({ supabase, roomId, user }) {
     }
   }
 
-  const sendSticker = async (stickerUrl) => {
-    console.log(stickerUrl)
+  const sendSticker = async (sticker) => {
+    console.log(sticker)
     await supabase.from("chat_messages").insert({
       room_id: roomId,
       user_id: user.id,
       type: "sticker",
-      file_url: stickerUrl,
+      file_url: sticker.path,
       content: "sticker"
     })
     setShowStickers(false)
@@ -164,7 +164,7 @@ export default function ChatInput({ supabase, roomId, user }) {
             (sticker, i) => (
               <img
                 key={i}
-                src={sticker}
+                src={sticker.signedUrl}
                 className="w-16 h-16 cursor-pointer"
                 onClick={() => sendSticker(sticker)}
               />

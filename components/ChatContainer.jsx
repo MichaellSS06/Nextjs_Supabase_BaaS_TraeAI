@@ -97,6 +97,7 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
             key={m.id}
             message={m}
             username={profilesMap[m.user_id] ?? m.user_id}
+            supabase={supabase}
           />
         ))}
         <div ref={scrollRef} />
