@@ -28,7 +28,7 @@ export default async function DashboardLayout({ children }) {
   const now = new Date()
   const diffDays = (now - createdAt) / (1000 * 60 * 60 * 24)
 
-  if (diffDays <= 30) {
+  if (diffDays <= 1) {
     return <>{children}</>
   }
 
