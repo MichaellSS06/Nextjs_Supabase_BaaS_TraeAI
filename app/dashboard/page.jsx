@@ -5,6 +5,7 @@ import { HydrateUser } from "@/components/HydratedUser"
 import WorkoutCard from "@/components/WorkoutCard"
 import ActiveWorkoutDisplay from "./ActiveWorkoutDisplay"
 import ChatSelector from "@/components/ChatSelector"
+import ButtonCancelSub from "@/components/ButtonCancelSub"
 
 export default async function DashboardPage() {
   const supabase = await createServerClient()
@@ -12,6 +13,7 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
   console.log(user.user_metadata.avatar_url)
+  console.log(user.id)
 
   // Obtener entrenamientos generales o creados por el sistema
   const { data: workouts, error } = await supabase
@@ -32,6 +34,9 @@ export default async function DashboardPage() {
       {user && <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />}
       
       <LogoutButton />
+
+      <ButtonCancelSub userId={user.id}/>
+
 
       <Link href="/dashboard/profilesetup" className="hover:text-blue-400 transition">Configurar perfil</Link>
       <HydrateUser user={user} />

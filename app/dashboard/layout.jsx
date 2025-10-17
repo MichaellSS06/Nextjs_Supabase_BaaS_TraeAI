@@ -16,10 +16,9 @@ export default async function DashboardLayout({ children }) {
     .from("subscriptions")
     .select("*")
     .eq("user_id", user.id)
-    .eq("status", "active")
     .maybeSingle()
 
-  if (subscription) {
+  if (new Date(subscription?.expires_at) > new Date()) {
     return <>{children}</>
   }
 

@@ -1,0 +1,27 @@
+curl -X POST https://qcjovwjujijndxfhsxmk.supabase.co/functions/v1/webhook \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "subscription.updated",
+    "data": {
+      "id": "sub_01test123",
+      "status": "active",
+      "started_at": "2025-10-15T00:00:00Z",
+      "next_billed_at": "2026-10-18T08:00:48.846853Z",
+      "custom_data": {
+        "user_id": "db9cd342-cb80-48ba-8012-756ac49387f6"
+      }
+    }
+  }'
+
+  curl -X POST https://qcjovwjujijndxfhsxmk.supabase.co/functions/v1/webhook \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "subscription.canceled",
+    "data": {
+      "id": "sub_01test123",
+      "status": "canceled",
+      "custom_data": {
+        "user_id": "db9cd342-cb80-48ba-8012-756ac49387f6"
+      }
+    }
+  }'
