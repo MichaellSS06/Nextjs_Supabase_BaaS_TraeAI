@@ -43,7 +43,7 @@ export default function ProgressPage() {
   const weightDiff = latest.weight && prev.weight ? (latest.weight - prev.weight).toFixed(1) : null
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-10 ">
+    <div className="mt-15 max-w-6xl mx-auto p-6 space-y-10 ">
         <div className="flex items-center justify-center">
             <Link href="/progress/new" className="hover:text-blue-400 transition p-4 text-center font-medium">Nuevo progreso</Link>
             <Link href="/dashboard" className="hover:text-blue-400 transition p-4 text-center font-medium">Dashboard</Link>

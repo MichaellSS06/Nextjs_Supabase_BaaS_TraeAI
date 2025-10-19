@@ -90,20 +90,30 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
   }, [messages])
 
   return (
-    <div className="border rounded p-4 flex flex-col h-[70vh]">
-      <div className="flex-1 overflow-auto space-y-2 mb-4">
-        {messages.map((m) => (
-          <ChatMessage
-            key={m.id}
-            message={m}
-            username={profilesMap[m.user_id] ?? m.user_id}
-            supabase={supabase}
+    <div className="border border-gray-200 rounded-xl shadow-sm bg-white p-4 flex flex-col min-h-screen">
+      <div className="flex-1 overflow-auto space-y-3 mb-4 p-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        {messages.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <p className="text-center">No hay mensajes aún. ¡Sé el primero en escribir!</p>
+          </div>
+        ) : (
+          messages.map((m) => (
+            <ChatMessage
+              key={m.id}
+              message={m}
+              username={profilesMap[m.user_id] ?? m.user_id}
+              supabase={supabase}
           />
-        ))}
+        )))}
         <div ref={scrollRef} />
       </div>
 
-      <ChatInput supabase={supabase} roomId={roomId} user={user} />
+      <div className="sticky bottom-0 p-2">
+        <ChatInput supabase={supabase} roomId={roomId} user={user} />
+      </div> 
     </div>
   )
 }

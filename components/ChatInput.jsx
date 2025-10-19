@@ -1,5 +1,8 @@
 "use client"
+
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Send, Paperclip, Smile, Image } from "lucide-react"
 import EmojiPicker from 'emoji-picker-react'
 import { isPremium } from "@/utils/isPremium"
 import { getStickers } from "@/utils/getStickers"
@@ -16,10 +19,8 @@ export default function ChatInput({ supabase, roomId, user }) {
     const loadStickers = async () => {
       if (!user) return
       const premium = await isPremium(supabase, user.id)
-      console.log(premium)
       if (premium) {
         const stickerUrls = await getStickers(supabase)
-        console.log("Stickers obtenidos:", stickerUrls)
         setStickers(stickerUrls)
       }
     }
@@ -87,7 +88,6 @@ export default function ChatInput({ supabase, roomId, user }) {
   }
 
   const sendSticker = async (sticker) => {
-    console.log(sticker)
     await supabase.from("chat_messages").insert({
       room_id: roomId,
       user_id: user.id,
@@ -98,10 +98,17 @@ export default function ChatInput({ supabase, roomId, user }) {
     setShowStickers(false)
   }
 
+  const buttonVariants = {
+    idle: { scale: 1 },
+    hover: { scale: 1.05 },
+    tap: { scale: 0.95 },
+    disabled: { opacity: 0.5 }
+  }
+
   return (
-    <div className="border-t p-2 flex flex-col space-y-2 bg-white">
+    <div className="border-t p-3 flex flex-col space-y-2 bg-white shadow-sm">
       {previewFile && (
-        <div className="p-2 border rounded-lg flex items-center justify-between">
+        <div className="p-2 border rounded-lg flex items-center justify-between bg-gray-50">
           {previewFile.type.startsWith("image/") ? (
             <img
               src={URL.createObjectURL(previewFile)}
@@ -109,64 +116,107 @@ export default function ChatInput({ supabase, roomId, user }) {
               className="h-20 rounded"
             />
           ) : (
-            <p className="text-sm">{previewFile.name}</p>
+            <p className="text-sm flex items-center gap-2">
+              <Paperclip size={16} />
+              {previewFile.name}
+            </p>
           )}
-          <button
-            className="text-red-500 ml-2"
+          <motion.button
+            className="text-red-500 ml-2 p-1 rounded-full hover:bg-red-50"
             onClick={() => setPreviewFile(null)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
             ✖
-          </button>
+          </motion.button>
         </div>
       )}
 
       <div className="flex items-center gap-2">
-        <label className="cursor-pointer">
-          📎
+        <motion.label 
+          className="cursor-pointer p-2 rounded-full hover:bg-gray-100"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Paperclip size={20} className="text-gray-500" />
           <input
             type="file"
             hidden
             accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
             onChange={handleFileSelect}
           />
-        </label>
+        </motion.label>
 
-        <button onClick={() => setShowEmoji(!showEmoji)}>😀</button>
-        <button onClick={() => setShowStickers(!showStickers)}>🖼️</button>
+        <motion.button 
+          onClick={() => setShowEmoji(!showEmoji)}
+          className="p-2 rounded-full hover:bg-gray-100"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Smile size={20} className="text-gray-500" />
+        </motion.button>
+        
+        <motion.button 
+          onClick={() => setShowStickers(!showStickers)}
+          className="p-2 rounded-full hover:bg-gray-100"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <Image size={20} className="text-gray-500" />
+        </motion.button>
 
         <input
           type="text"
-          className="flex-1 border rounded-lg px-2 py-1"
+          className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Escribe un mensaje..."
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
 
-        <button
+        <motion.button
           onClick={sendMessage}
           disabled={sending}
-          className="bg-blue-600 text-white px-3 rounded"
+          className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white p-2 rounded-lg flex items-center justify-center"
+          variants={buttonVariants}
+          initial="idle"
+          whileHover="hover"
+          whileTap="tap"
+          animate={sending ? "disabled" : "idle"}
         >
-          {sending ? "..." : "Enviar"}
-        </button>
+          {sending ? (
+            <div className="h-5 w-5 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+          ) : (
+            <Send size={20} />
+          )}
+        </motion.button>
       </div>
 
       {showEmoji && (
-        <div className="absolute bottom-16">
-          <EmojiPicker onEmojiClick={(emoji) => setText(text + emoji.emoji)} />
-        </div>
-      )}
+          <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50 shadow-xl rounded-lg">
+            <div className="relative">
+              <button 
+                onClick={() => setShowEmoji(false)}
+                className="z-51 absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-md"
+              >
+                ✕
+              </button>
+              <EmojiPicker onEmojiClick={(emoji) => setText(text + emoji.emoji)} height={350} width={350} />
+            </div>
+          </div>
+        )}
 
       {showStickers && stickers.length > 0 && (
-        <div className="absolute bottom-16 grid grid-cols-4 gap-2 bg-white p-2 border rounded-lg">
+        <div className="absolute bottom-16 z-10 grid grid-cols-4 gap-2 bg-white p-3 border rounded-lg shadow-lg">
           {stickers.map(
             (sticker, i) => (
-              <img
+              <motion.img
                 key={i}
                 src={sticker.signedUrl}
-                className="w-16 h-16 cursor-pointer"
+                className="w-16 h-16 cursor-pointer rounded hover:bg-gray-100"
                 onClick={() => sendSticker(sticker)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               />
             )
           )}

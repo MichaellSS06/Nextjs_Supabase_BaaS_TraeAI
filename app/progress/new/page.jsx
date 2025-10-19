@@ -64,7 +64,7 @@ export default function NewProgressPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow rounded-lg mt-6">
+    <div className="mt-15 max-w-md mx-auto p-6 bg-white shadow rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registrar Progreso</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">

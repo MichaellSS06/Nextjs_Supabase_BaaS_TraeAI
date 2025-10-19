@@ -19,7 +19,7 @@ export default async function GlobalChatPage() {
     .order("created_at", { ascending: true })
 
   return (
-    <div className="p-4">
+    <div className="mt-15 p-4 min-h-screen">
       <h1 className="text-xl font-bold mb-4">Chat Global 🌍</h1>
       <ChatContainer roomId={room.id} initialMessages={messages ?? []} />
     </div>

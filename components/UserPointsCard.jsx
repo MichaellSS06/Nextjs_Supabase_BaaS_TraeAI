@@ -35,8 +35,8 @@ export default function UserPointsCard() {
 
   if (loading) {
     return (
-      <div className="p-6 bg-gray-100 rounded-xl shadow text-center">
-        <p className="text-gray-600">Cargando puntos...</p>
+      <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center h-24">
+        <div className="w-6 h-6 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
       </div>
     )
   }

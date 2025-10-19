@@ -3,6 +3,8 @@
 import { useUserStore } from "@/lib/userStore"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
+import { LogOut } from "lucide-react"
 
 export default function LogoutButton() {
   const supabase = createClientComponentClient()
@@ -29,13 +31,16 @@ export default function LogoutButton() {
           className="w-12 h-12 rounded-full object-cover" 
         />
       }
-
-      <button
+      <motion.button
         onClick={handleLogout}
-        className="px-4 py-2 bg-red-600 text-white rounded-lg"
+        className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:shadow-md flex items-center gap-2 font-medium"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 10 }}
       >
+        <LogOut size={16} />
         Cerrar sesión
-      </button>
+      </motion.button>
     </div>
   )
 }

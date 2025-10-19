@@ -104,7 +104,7 @@ export default function ProfileSetupPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow rounded-lg">
+    <div className="mt-15 max-w-2xl mx-auto p-6 bg-white shadow rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Configura tu Perfil</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
 

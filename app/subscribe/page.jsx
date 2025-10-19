@@ -63,7 +63,7 @@ export default function SubscribePage() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-6 mt-10">
+    <div className="mt-15 flex flex-col items-center gap-6">
       <h1 className="text-3xl font-bold">Elige tu plan</h1>
 
       {products.map((p) => (

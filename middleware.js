@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/workouts/:path*", "/profile/:path*"],
+  matcher: ["/dashboard/:path*", "/workouts/:path*", "/profile/:path*", "/suscribe/:path*", "/progress/:path*"],
 }
 
 export async function middleware(req) {
@@ -14,7 +14,7 @@ export async function middleware(req) {
   } = await supabase.auth.getSession()
 
   // Rutas privadas
-  const protectedRoutes = ["/dashboard", "/workouts", "/profile"]
+  const protectedRoutes = ["/dashboard", "/workouts", "/profile", "/suscribe", "/progress"]
 
   if (protectedRoutes.some((route) => req.nextUrl.pathname.startsWith(route))) {
     if (!session) {
