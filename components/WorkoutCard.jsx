@@ -33,7 +33,7 @@ export default function WorkoutCard({ workout }) {
       whileHover={{ y: -5 }}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.1 }}
     >
       <div className="bg-indigo-50 p-4 border-b border-indigo-100">
         <h3 className="text-lg font-bold text-gray-800">{workout.name}</h3>

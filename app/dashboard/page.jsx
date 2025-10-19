@@ -5,12 +5,14 @@ import { HydrateUser } from "@/components/HydratedUser"
 import WorkoutCard from "@/components/WorkoutCard"
 import ActiveWorkoutDisplay from "./ActiveWorkoutDisplay"
 import ChatSelector from "@/components/ChatSelector"
+import ButtonCancelSub from "@/components/ButtonCancelSub"
 
 export default async function DashboardPage() {
   const supabase = await createServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
+  console.log(user.id)
 
   // Obtener entrenamientos generales o creados por el sistema
   const { data: workouts, error } = await supabase
@@ -67,6 +69,11 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
+
+      <div className="flex justify-center items-center mb-10">
+        <ButtonCancelSub userId={user.id}/>
+      </div>
+
 
         <HydrateUser user={user} />
         
