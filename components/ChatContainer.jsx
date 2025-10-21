@@ -5,6 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useUserStore } from "@/lib/userStore"
 import ChatInput from "./ChatInput"
 import ChatMessage from "./ChatMessage"
+import { usePathname } from "next/navigation"
 
 export default function ChatContainer({ roomId, initialMessages = [] }) {
   // Usar useMemo para crear una instancia estable de supabase
@@ -14,9 +15,20 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
   const channelRef = useRef(null)
   const [profilesMap, setProfilesMap] = useState({})
   const user = useUserStore((state) => state.user)
+  const pathname = usePathname()
   // const profile = useUserStore((state) => state.profile)
   // console.log(user)
   // console.log(profile)
+  useEffect(() => {
+    // Si salimos del chat (ej: vamos a dashboard)
+    if (!pathname.startsWith("/chat")) {
+      console.log("🏁 Saliendo del chat, limpiando canal")
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current)
+        channelRef.current = null
+      }
+    }
+  }, [pathname])
 
   useEffect(() => {
     // Al montar, traemos todos los perfiles de los user_id que existen en la room
@@ -77,8 +89,10 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
 
       return () => {  
           console.log("🧹 Cerrando canal:", roomId)
-          supabase.removeChannel(channel)
-          channelRef.current = null
+          if (channelRef.current) {
+            supabase.removeChannel(channelRef.current)
+            channelRef.current = null
+          }
       }}
       setupRealtime()
           // 🔁 Detectar navegación atrás/adelante
