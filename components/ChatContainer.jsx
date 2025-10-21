@@ -81,6 +81,16 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
           channelRef.current = null
       }}
       setupRealtime()
+          // 🔁 Detectar navegación atrás/adelante
+      const handlePopState = () => {
+        if (!channelRef.current) {
+          console.log("♻️ Reintentando suscripción tras back/forward")
+          setupRealtime()
+        }
+      }
+
+      window.addEventListener("popstate", handlePopState)
+      return () => window.removeEventListener("popstate", handlePopState)
   }, [roomId])
 
   useEffect(() => {

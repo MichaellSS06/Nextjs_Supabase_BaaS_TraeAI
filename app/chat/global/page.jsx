@@ -21,7 +21,7 @@ export default async function GlobalChatPage() {
   return (
     <div className="mt-15 p-4 min-h-screen">
       <h1 className="text-xl font-bold mb-4">Chat Global 🌍</h1>
-      <ChatContainer roomId={room.id} initialMessages={messages ?? []} />
+      <ChatContainer key={room.id} roomId={room.id} initialMessages={messages ?? []} />
     </div>
   )
 }
