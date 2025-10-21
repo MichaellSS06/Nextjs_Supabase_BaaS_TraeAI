@@ -41,8 +41,13 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
   }, [])
 
   useEffect(() => {
+    let isCancelled = false
     const setupRealtime = async () => {
       if (!roomId) return // evitar suscribirse con undefined
+
+      // Espera breve por si el cleanup anterior sigue cerrando el canal
+      await new Promise(res => setTimeout(res, 150))
+
         // 🔑 Esto asegura que el cliente tenga la sesión actual
       const { data: { session }, error } = await supabase.auth.getSession()
       if (error) {
@@ -56,10 +61,14 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
       console.log("Sesion cargada ✅:", session.user.id)
       console.log("🔄 Suscribiendo a room:", roomId)
 
-      // Limpiar canal anterior
+      // Limpieza previa (si quedara un canal viejo)
       if (channelRef.current) {
-          supabase.removeChannel(channelRef.current)
+        console.log("🧹 Eliminando canal previo antes de suscribirse")
+        await supabase.removeChannel(channelRef.current)
+        channelRef.current = null
       }
+
+      if (isCancelled) return // si el efecto se desmontó antes de terminar
 
       // Crear canal único
       const channel = supabase.channel(`chat_room_${roomId}`)
@@ -86,25 +95,28 @@ export default function ChatContainer({ roomId, initialMessages = [] }) {
           })
 
       channelRef.current = channel
+    }
 
-      return () => {  
-          console.log("🧹 Cerrando canal:", roomId)
-          if (channelRef.current) {
-            supabase.removeChannel(channelRef.current)
-            channelRef.current = null
-          }
-      }}
-      setupRealtime()
-          // 🔁 Detectar navegación atrás/adelante
-      const handlePopState = () => {
-        if (!channelRef.current) {
-          console.log("♻️ Reintentando suscripción tras back/forward")
-          setupRealtime()
-        }
+    setupRealtime()
+    // 🔁 Reintentar suscripción al navegar atrás/adelante
+    const handlePopState = () => {
+      if (!channelRef.current) {
+        console.log("♻️ Reintentando suscripción tras back/forward")
+        setupRealtime()
       }
+    }
 
-      window.addEventListener("popstate", handlePopState)
-      return () => window.removeEventListener("popstate", handlePopState)
+    window.addEventListener("popstate", handlePopState)
+
+    return () => {
+      isCancelled = true
+      console.log("🧹 Cerrando canal:", roomId)
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current)
+        channelRef.current = null
+      }
+      window.removeEventListener("popstate", handlePopState)
+    }
   }, [roomId])
 
   useEffect(() => {

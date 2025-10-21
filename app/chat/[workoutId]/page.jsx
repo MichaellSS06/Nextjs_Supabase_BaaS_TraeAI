@@ -15,13 +15,11 @@ export default async function ChatPage({ params }) {
     .select("id, type, file_url, content, created_at, user_id, profiles(username)")
     .eq("room_id", room.id)
     .order("created_at", { ascending: true })
-  
-  const key = `${room.id}-${Date.now()}`
 
   return (
     <div className="mt-15 p-4">
       <h1 className="text-xl font-bold mb-4">Chat del Workout {workoutId}</h1>
-      <ChatContainer key={key} roomId={room.id} initialMessages={messages ?? []} />
+      <ChatContainer key={room.id} roomId={room.id} initialMessages={messages ?? []} />
     </div>
   )
 }
